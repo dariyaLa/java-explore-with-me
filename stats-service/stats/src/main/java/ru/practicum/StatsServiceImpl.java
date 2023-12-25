@@ -98,10 +98,6 @@ public class StatsServiceImpl implements StatsService {
         return URLDecoder.decode(dateTime, StandardCharsets.UTF_8);
     }
 
-//    public static String encodeDate(LocalDateTime dateTime) {
-//        return URLEncoder.encode(dateTime.format(formatter), StandardCharsets.UTF_8);
-//    }
-
     public static Instant parseDateTime(String dateTime) {
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
         return localDateTime.toInstant(ZONE_OFFSET);
