@@ -1,7 +1,10 @@
 version: '3.1'
+volumes:
+  stats:                                 # <- Rename "volume_name"
+    name: stats
 services:
-  stats-server:
-    build: stats-server/stats-service
+  stats:
+    build: stats-service/stats
     image: stats-service-image
     container_name: stats-service
     ports:
@@ -25,27 +28,27 @@ services:
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=password
 
-  ewm-service:
-    build: ewm-service
-    image: ewm-service-image
-    container_name: ewm-service
+  main-service:
+    build: main-service
+    image: main-service-image
+    container_name: main-service
     ports:
       - "8080:8080"
     depends_on:
-      - ewm-db
+      - main-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
-      - POSTGRES_USER=ewm
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main
+      - POSTGRES_USER=main
       - POSTGRES_PASSWORD=password
 
-  ewm-db:
+  main-db:
     image: postgres:12-alpine
-    container_name: ewm-db
+    container_name: main-db
     volumes:
-      - /var/lib/postgresql/data/
+      - stats:/var/lib/postgresql/data/
     ports:
       - "6540:5432"
     environment:
-      - POSTGRES_DB=ewm
-      - POSTGRES_USER=ewm
+      - POSTGRES_DB=main
+      - POSTGRES_USER=main
       - POSTGRES_PASSWORD=password
