@@ -7,12 +7,12 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stats-service</artifactId>
+    <artifactId>stats-server</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>stats-client</module>
         <module>stats-dto</module>
-        <module>stats</module>
+        <module>stats-service</module>
     </modules>
 
 </project>

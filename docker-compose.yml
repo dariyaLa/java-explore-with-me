@@ -1,7 +1,7 @@
-version: '3.1'
+version: '3.8'
 services:
   stats:
-    build: stats-service/stats
+    build: stats-server/stats-service
     image: stats-service-image
     container_name: stats-service
     ports:
@@ -11,10 +11,9 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - POSTGRES_USER=stats
-      - POSTGRES_PASSWORD=password
-
+      - POSTGRES_PASSWORD=stats
   stats-db:
-    image: postgres:14-alpine
+    image: postgres:12-alpine
     container_name: stats-db
     volumes:
       - /var/lib/postgresql/data/
@@ -23,8 +22,7 @@ services:
     environment:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats
-      - POSTGRES_PASSWORD=password
-
+      - POSTGRES_PASSWORD=stats
   main-service:
     build: main-service
     image: main-service-image

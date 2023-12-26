@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StatsClientImpl implements StatsClient{
+public class StatsClientImpl implements StatsClient {
 
     private static final String URL = "http://stats-server:9090";
     private static final String PATH_HIT = "/hit";
@@ -34,6 +34,7 @@ public class StatsClientImpl implements StatsClient{
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
     }
+
     @Override
     public List<ViewStatsDto> getStatistics(LocalDateTime start,
                                             LocalDateTime end,
