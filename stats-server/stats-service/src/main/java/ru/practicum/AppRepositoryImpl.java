@@ -1,6 +1,6 @@
 package ru.practicum;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AppRepositoryImpl implements AppRepository {
 
     private final JdbcTemplate jdbcTemplate;

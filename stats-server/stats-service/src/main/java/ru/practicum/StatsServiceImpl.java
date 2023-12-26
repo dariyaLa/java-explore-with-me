@@ -45,9 +45,9 @@ public class StatsServiceImpl implements StatsService {
             appId = apps.get(0).getId();
         }
 
-        Hit endpointHit = HitMapper.toHit(hitDto, appId);
-        hitRepo.addHit(endpointHit);
-        log.debug("Пользователь {} просмотрел uri {} сервиса {}", endpointHit.getIp(), uri, name);
+        Hit hit = HitMapper.toHit(hitDto, appId);
+        hitRepo.addHit(hit);
+        log.debug("Пользователь {} просмотрел uri {} сервиса {}", hit.getIp(), uri, name);
 
     }
 

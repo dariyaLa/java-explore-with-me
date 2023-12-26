@@ -14,7 +14,7 @@ public interface StatsService {
     ZoneOffset ZONE_OFFSET = OffsetDateTime.now().getOffset();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    void addHit(@Valid HitDto endpointHitDto);
+    void addHit(@Valid HitDto hitDto);
 
     List<ViewStatsDto> getStats(String start, String end, List<String> uris, boolean unique);
 }

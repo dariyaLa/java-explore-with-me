@@ -49,9 +49,9 @@ public class StatsClientImpl implements StatsClient {
     }
 
     @Override
-    public void addHit(HitDto endpointHitDto) {
+    public void addHit(HitDto hitDto) {
 
-        HttpEntity<HitDto> request = new HttpEntity<>(endpointHitDto);
+        HttpEntity<HitDto> request = new HttpEntity<>(hitDto);
         ResponseEntity<Void> response = rest.exchange(PATH_HIT, HttpMethod.POST,
                 request, Void.class);
         if (response.getStatusCode() != HttpStatus.CREATED) {

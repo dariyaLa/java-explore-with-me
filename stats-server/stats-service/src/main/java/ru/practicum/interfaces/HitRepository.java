@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface HitRepository {
 
-    Hit addHit(Hit endpointHit);
+    Hit addHit(Hit hit);
 
     Map<Long, Long> getHitsById(Instant start, Instant end);
 

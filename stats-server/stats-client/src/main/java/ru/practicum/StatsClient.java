@@ -10,5 +10,5 @@ public interface StatsClient {
                                      List<String> uris,
                                      Boolean unique);
 
-    void addHit(HitDto endpointHitDto);
+    void addHit(HitDto hitDto);
 }

@@ -18,7 +18,7 @@ public class ExpHandler {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, String>> exeptionHandleIncorrect(final MethodArgumentNotValidException e) {
-        errors.setMessageError("Поле " + Objects.requireNonNull(Objects.requireNonNull(e.getFieldError()).getField()) +
+        errors.setMessageError("Field " + Objects.requireNonNull(Objects.requireNonNull(e.getFieldError()).getField()) +
                 " " + Objects.requireNonNull(e.getAllErrors().get(0).getDefaultMessage()));
         return new ResponseEntity<Map<String, String>>(
                 Map.of("messageError", errors.getMessageError()),
