@@ -20,17 +20,12 @@ import java.util.Map;
 
 public class StatsClientImpl implements StatsClient {
 
-    private static final String URL = "http://stats-server:9090";
-    private static final String PATH_HIT = "/hit";
-    private static final String PATH_PARAM_WITH_URIS = "&uris={uris}";
-    private static final String PATH_PARAM_WITH_UNIQUE = "&unique={unique}";
-    private static final String PATH_PARAM_WITH_DATE = "/stats?start={start}&end={end}";
     private final RestTemplate rest;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public StatsClientImpl() {
         rest = new RestTemplateBuilder()
-                .uriTemplateHandler(new DefaultUriBuilderFactory(URL))
+                .uriTemplateHandler(new DefaultUriBuilderFactory("${stats-server.URL}"))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
     }
@@ -44,7 +39,8 @@ public class StatsClientImpl implements StatsClient {
         Map<String, Object> parameters = addDateParameters(start, end);
         parameters.put("uris", String.join(",", uris));
         parameters.put("unique", unique);
-        String url = PATH_PARAM_WITH_DATE + PATH_PARAM_WITH_URIS + PATH_PARAM_WITH_UNIQUE;
+        String url = "${stats-server.PATH_PARAM_WITH_DATE}" + "${stats-server.PATH_PARAM_WITH_URIS}"
+                + "${stats-server.PATH_PARAM_WITH_UNIQUE}";
         return sendRequest(url, parameters);
     }
 
@@ -52,7 +48,7 @@ public class StatsClientImpl implements StatsClient {
     public void addHit(HitDto hitDto) {
 
         HttpEntity<HitDto> request = new HttpEntity<>(hitDto);
-        ResponseEntity<Void> response = rest.exchange(PATH_HIT, HttpMethod.POST,
+        ResponseEntity<Void> response = rest.exchange("${stats-server.PATH_HIT}", HttpMethod.POST,
                 request, Void.class);
         if (response.getStatusCode() != HttpStatus.CREATED) {
             throw new StatsRequestException("Ошибка при сохранении данных: " + response.getBody());
@@ -83,7 +79,7 @@ public class StatsClientImpl implements StatsClient {
     }
 
     private String encodeDate(LocalDateTime dateTime) {
-        String dateTimeString = dateTime.format(formatter);
+        String dateTimeString = dateTime.format(FORMATTER);
         return URLEncoder.encode(dateTimeString, StandardCharsets.UTF_8);
     }
 }
