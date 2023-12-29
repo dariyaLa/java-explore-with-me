@@ -1,2 +1,5 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+
+Схема базы данных сепвиса stats-service:
+
+![img.png](stats-service-db.png)
