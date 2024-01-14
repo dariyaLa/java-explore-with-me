@@ -16,7 +16,6 @@ import static ru.practicum.constants.Constant.URI_EVENTS;
 import static ru.practicum.constants.Constant.getZoneOffset;
 import static ru.practicum.events.enums.EventState.PUBLISHED;
 
-//@RequiredArgsConstructor
 @Service
 @RequiredArgsConstructor
 public class StatsIntegration {
@@ -58,7 +57,6 @@ public class StatsIntegration {
     private List<String> makeUris(List<Event> events) {
         List<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
         return eventIds.stream().map(id -> "/" + URI_EVENTS + "/" + id).collect(Collectors.toList());
-        //return eventIds.stream().map(id -> URI_EVENTS + "/" + id).collect(Collectors.toList());
     }
 
     private LocalDateTime getStartTime(List<Event> events) {
