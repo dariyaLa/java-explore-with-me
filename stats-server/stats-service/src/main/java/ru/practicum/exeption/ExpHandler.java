@@ -35,5 +35,13 @@ public class ExpHandler {
         );
     }
 
+    @ExceptionHandler
+    public ResponseEntity<Map<String, String>> exceptionHandleValidation(final ValidationException e) {
+        return new ResponseEntity<Map<String, String>>(
+                Map.of("messageError", e.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
 
 }

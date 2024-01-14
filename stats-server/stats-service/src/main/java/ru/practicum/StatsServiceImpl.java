@@ -3,8 +3,7 @@ package ru.practicum;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.interfaces.AppRepository;
-import ru.practicum.interfaces.HitRepository;
+import ru.practicum.exeption.ValidationException;
 import ru.practicum.interfaces.StatsService;
 import ru.practicum.model.App;
 import ru.practicum.model.Hit;
@@ -24,8 +23,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class StatsServiceImpl implements StatsService {
 
-    private final HitRepository hitRepo;
-    private final AppRepository appRepo;
+    private final HitRepositoryImpl hitRepo;
+    private final AppRepositoryImpl appRepo;
 
     @Override
     public void addHit(HitDto hitDto) {
@@ -58,6 +57,8 @@ public class StatsServiceImpl implements StatsService {
 
         Instant startDate = parseDateTime(startDecoded);
         Instant endDate = parseDateTime(endDecoded);
+
+        validateDate(startDate, endDate);
 
         Map<Long, Long> viewsByAppId;
         List<App> apps;
@@ -101,5 +102,11 @@ public class StatsServiceImpl implements StatsService {
     public static Instant parseDateTime(String dateTime) {
         LocalDateTime localDateTime = LocalDateTime.parse(dateTime, formatter);
         return localDateTime.toInstant(ZONE_OFFSET);
+    }
+
+    public static void validateDate(Instant start, Instant end) {
+        if (!end.isAfter(start)) {
+            throw new ValidationException("Дата окончания диапазона должна быть позже даты начала");
+        }
     }
 }

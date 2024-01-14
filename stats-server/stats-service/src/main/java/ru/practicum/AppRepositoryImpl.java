@@ -40,6 +40,9 @@ public class AppRepositoryImpl implements AppRepository {
 
     @Override
     public List<App> getAppsByUris(List<String> uris) {
+//        List<String> newUris = uris.stream()
+//                .map(i->i.substring(1,i.length()))
+//                .collect(Collectors.toList());
         String sql = "select id, name, uri from apps where uri in (:uris)";
         SqlParameterSource parameters = new MapSqlParameterSource("uris", uris);
         return parameterJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToApp(rs));

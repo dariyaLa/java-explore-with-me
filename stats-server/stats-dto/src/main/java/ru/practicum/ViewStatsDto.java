@@ -18,4 +18,12 @@ public class ViewStatsDto implements Comparable<ViewStatsDto> {
         return (int) (o.getHits() - hits);
     }
 
+    @Override
+    public String toString() {
+        return "ViewStatsDto{" +
+                "app='" + app + '\'' +
+                ", uri='" + uri + '\'' +
+                ", hits=" + hits +
+                '}';
+    }
 }
