@@ -27,12 +27,10 @@ import java.util.Map;
 @PropertySource("classpath:application.properties")
 public class StatsClientImpl implements StatsClient {
 
-    //private AppConfig appConfig = new AppConfig();
-
-    private final String PATH_HIT;
-    private final String PATH_STATS_WITH_DATE_PARAMS;
-    private final String PARAM_UNIQUE;
-    private final String PARAM_URIS;
+    private final String pathHit;
+    private final String pathStatsWithDateParams;
+    private final String paramUnique;
+    private final String paramUris;
     private final RestTemplate rest;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -45,10 +43,10 @@ public class StatsClientImpl implements StatsClient {
                 .uriTemplateHandler(new DefaultUriBuilderFactory(url))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
-        PATH_STATS_WITH_DATE_PARAMS = pathStatsDate;
-        PARAM_UNIQUE = paramUnique;
-        PARAM_URIS = paramUris;
-        PATH_HIT = pathHit;
+        pathStatsWithDateParams = pathStatsDate;
+        this.paramUnique = paramUnique;
+        this.paramUris = paramUris;
+        this.pathHit = pathHit;
     }
 
 
@@ -61,7 +59,7 @@ public class StatsClientImpl implements StatsClient {
         Map<String, Object> parameters = addDateParameters(start, end);
         parameters.put("uris", String.join(",", uris));
         parameters.put("unique", unique);
-        String url = PATH_STATS_WITH_DATE_PARAMS + PARAM_URIS + PARAM_UNIQUE;
+        String url = pathStatsWithDateParams + paramUris + paramUnique;
         return sendRequest(url, parameters);
     }
 
@@ -69,7 +67,7 @@ public class StatsClientImpl implements StatsClient {
     public void addHit(HitDto hitDto) {
 
         HttpEntity<HitDto> request = new HttpEntity<>(hitDto);
-        ResponseEntity<Void> response = rest.exchange(PATH_HIT, HttpMethod.POST,
+        ResponseEntity<Void> response = rest.exchange(pathHit, HttpMethod.POST,
                 request, Void.class);
         if (response.getStatusCode() != HttpStatus.CREATED) {
             throw new StatsRequestException("Ошибка при сохранении данных: " + response.getBody());
