@@ -12,7 +12,7 @@ import static ru.practicum.constants.Constant.*;
 public class Filter {
 
 
-    private Map<String, Object> mapFilter = new HashMap<>();
+    private final Map<String, Object> mapFilter = new HashMap<>();
 
     public Map<String, Object> getMapFilter() {
         return mapFilter;

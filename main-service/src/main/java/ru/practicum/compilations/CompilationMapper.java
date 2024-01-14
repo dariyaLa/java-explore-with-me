@@ -1,5 +1,7 @@
 package ru.practicum.compilations;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.categories.Category;
 import ru.practicum.events.Event;
@@ -13,7 +15,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CompilationMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CompilationMapper {
 
     public static Compilation toCompilation(CompilationDto compilationDto) {
         Compilation compilation = Compilation.builder()

@@ -1,5 +1,7 @@
 package ru.practicum.events.dto;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.StatsRequestException;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.categories.Category;
@@ -19,7 +21,8 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.constants.Constant.getZoneOffset;
 
-public class EventMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EventMapper {
 
     public static Event toEvent(EventDto eventDto, long locationId, long userId) {
         return Event.builder()

@@ -54,33 +54,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
             throw new ConflictException(String.format(REQUEST_DUPLICATE_EXCEPTION, event.getId(), userId));
         }
         return RequestMapper.toRequestDtoOut(request);
-//        Event event = eventRepo.find(eventId);
-//        event.setRequestModeration(true);
-//        validateRequest(event, eventId, userId);
-//        Request request = Request.builder()
-//                .requesterId(userId)
-//                .eventId(eventId)
-//                .build();
-//        int confirmedRequests = repository.countRequestsByEventId(eventId);
-//        int limit = event.getParticipantLimit();
-//        //if (!event.isRequestModeration() && (confirmedRequests < limit) || limit == 0) {
-////        if (!event.isRequestModeration() && (confirmedRequests < limit)) {
-////            request.setStatus(CONFIRMED);
-////        } else {
-////        request.setStatus(RequestState.PENDING);
-////            //throw new ConflictException(String.format(EVENT_OVERFULL_PARTICIPANT_EXCEPTION, event.getId()));
-////        }
-//        if (!event.isRequestModeration() && confirmedRequests >= limit) {
-//        //if (!event.isRequestModeration() && confirmedRequests >= limit || limit == 0) {
-//            throw new ConflictException(String.format(EVENT_OVERFULL_PARTICIPANT_EXCEPTION, event.getId()));
-//        }
-//        try {
-//            request.setStatus(CONFIRMED);
-//            request = repository.add(request);
-//        } catch (DuplicateKeyException e) {
-//            throw new ConflictException(String.format(REQUEST_DUPLICATE_EXCEPTION, event.getId(), userId));
-//        }
-//        return RequestMapper.toRequestDtoOut(request);
     }
 
     @Override
@@ -98,7 +71,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
     public RequestDtoOut cancel(Long userId, Long reqId) {
         Request request = repository.find(reqId);
         if (request.getRequesterId() != userId) {
-            log.warn("Редактирование запроса с id {} недоступно для пользователя с id {}", reqId, userId);
             throw new NotFoundException(
                     String.format("Редактирование запроса с id %d недоступно для пользователя с id %d",
                             reqId, userId));
@@ -115,7 +87,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
         Event event = eventRepo.find(eventId);
         int participantLimit = event.getParticipantLimit();
         if (participantLimit == 0 || !event.isRequestModeration()) {
-            log.warn("Событие с id {} не требует одобрения заявок", event.getId());
             throw new ConflictException(String.format("Событие с id %d не требует одобрения заявок", event.getId()));
         }
         //проверяем лимит
@@ -129,12 +100,10 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
 
         requestsToUpdate.forEach(request -> {
             if (request.getEventId() != eventId) {
-                log.warn("Заявка с id {} не относится к событию с id {}", request.getId(), eventId);
                 throw new NotFoundException(
                         String.format("Заявка с id %d не относится к событию с id %d", request.getId(), eventId));
             }
             if (request.getStatus() != RequestState.PENDING) {
-                log.warn("Попытка изменить статус у заявок не в состоянии ожидания");
                 throw new ConflictException("Можно изменить статус только у заявок, находящихся в состоянии ожидания");
             }
         });
@@ -173,7 +142,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
                     .map(RequestMapper::toRequestDtoOut)
                     .collect(Collectors.toList());
 
-            //return RequestMapper.toEventRequestStatusUpdateResult(confirmedRequests, rejectedRequests);
             return new RequestUpdateDtoOut(confirmedRequestsOut, rejectedRequestsOut);
 
         } else if (newStatus == REJECTED) {
@@ -182,7 +150,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
             Collection<RequestDtoOut> requestsToUpdateOut = requestsToUpdate.stream()
                     .map(RequestMapper::toRequestDtoOut)
                     .collect(Collectors.toList());
-            //return requestsToUpdate.RequestMapper.toEventRequestStatusUpdateResult(Collections.emptyList(), requestsToUpdate);
             return new RequestUpdateDtoOut(Collections.emptyList(), requestsToUpdateOut);
         } else {
             throw new ValidationException("Нельзя изменить статус на PENDING");
@@ -193,7 +160,6 @@ public class RequestServiceImpl implements ServiceRequests<RequestDtoOut, Long, 
     public Collection<RequestDtoOut> findRequestsForUserByEvent(Long userId, Long eventId) {
         Event event = eventRepo.find(eventId);
         if (event.getInitiator() != userId) {
-            log.warn("Пользователь с id {} не организатор события с id {}", userId, eventId);
             throw new ValidationException(
                     String.format("Пользователь с id %d не организатор события с id %d", userId, eventId));
         }

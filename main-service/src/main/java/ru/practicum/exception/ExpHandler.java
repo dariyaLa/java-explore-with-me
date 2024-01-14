@@ -15,15 +15,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class ExpHandler {
 
-//    @ExceptionHandler
-//    public ResponseEntity<Map<String, String>> exeptionHandleIncorrect(final MethodArgumentNotValidException e) {
-//        return new ResponseEntity<Map<String, String>>(
-//                Map.of("messageError",  Objects.requireNonNull(Objects.requireNonNull(e.getFieldError()).getField()) +
-//                        " " + Objects.requireNonNull(e.getAllErrors().get(0).getDefaultMessage())),
-//                HttpStatus.BAD_REQUEST
-//        );
-//    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError exceptionHandleIncorrect(final MethodArgumentNotValidException e) {

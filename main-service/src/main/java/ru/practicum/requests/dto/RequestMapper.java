@@ -1,5 +1,7 @@
 package ru.practicum.requests.dto;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.requests.Request;
 
 import java.time.LocalDateTime;
@@ -9,7 +11,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-public class RequestMapper {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RequestMapper {
 
     public static final ZoneOffset ZONE_OFFSET = OffsetDateTime.now().getOffset();
 

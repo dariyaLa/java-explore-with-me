@@ -106,8 +106,6 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     public EventDtoOut find(Long id, String ip) {
         Event event = repository.find(id);
         if (event.getEventState() != PUBLISHED) {
-            log.warn("Попытка просмотра неопубликованного события с id {} пользователем с ip {}",
-                    id, ip);
             throw new NotFoundException(String.format("Событие с id %d еще не опубликовано", id));
         }
         statsIntegration.addHitStats(URI_EVENTS + "/" + id, ip, APP_MAIN);
@@ -140,17 +138,11 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     @Override
     public EventDtoOut updateByAdmin(Long eventId, EventUpdateDto updateEventDto) {
         Event event = repository.find(eventId);
-        //       int participantLimit = event.getParticipantLimit();
-        //проверяем лимит
-//        if (requestRepo.countRequestsByEventId(eventId) >= participantLimit) {
-//            throw new ConflictException(String.format(EVENT_OVERFULL_PARTICIPANT_EXCEPTION, eventId));
-//        }
         updateFields(event, updateEventDto);
         String stateAction = updateEventDto.getStateAction();
         if (stateAction != null) {
             if (event.getEventState() != EventState.PENDING) {
-                log.warn("Событие можно опубликовать или отклонить только в состоянии PENDING");
-                throw new ConflictException("Событие можно опубликовать или отклонить только в состоянии PENDING");
+                throw new ConflictException("Событие можно опубликовать или отклонить только в статусе PENDING");
             }
             setEventStateByAdminAction(event, stateAction);
         }
@@ -165,7 +157,6 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
 
     private void setEventStateByAdminAction(Event event, String stateAction) {
         EventStateAdmin action = EventStateAdmin.valueOf(stateAction);
-        //   .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateAction));
         if (action == EventStateAdmin.PUBLISH_EVENT) {
             event.setEventState(PUBLISHED);
             event.setPublishedOn(Instant.now());
@@ -234,7 +225,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
                 long eventId = getEventId(new ArrayList<>(viewStatsDto).get(0));
                 if (event.getId() != eventId) {
                     throw new StatsRequestException(
-                            String.format("Ошибка запроса статистики: запрошенный id %d не соответствует возвращенному %d",
+                            String.format("Ошибка запроса статистики: запрошенный id %d не совпадает с возвращенным %d",
                                     event.getId(), eventId)
                     );
                 }
@@ -255,7 +246,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
                             long eventId = getEventId(new ArrayList<>(viewStatsDto).get(0));
                             if (i.getId() != eventId) {
                                 throw new StatsRequestException(
-                                        String.format("Ошибка запроса статистики: запрошенный id %d не соответствует возвращенному %d",
+                                        String.format("Ошибка запроса статистики: запрошенный id %d не совпадает с возвращенным %d",
                                                 i.getId(), eventId)
                                 );
                             }
