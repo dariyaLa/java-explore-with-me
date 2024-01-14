@@ -59,7 +59,6 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         long locationId = newLocation.getId();
         Event event = EventMapper.toEvent(eventDto, locationId, userId);
         event = repository.add(event);
-        //return eventFullDto(event, location);
         return eventFullDto(event);
     }
 
@@ -248,10 +247,25 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     private Collection<EventDtoOut> eventsFullDtoOut(Collection<Event> events) {
         return events.stream()
                 .map(i -> {
+                    int confirmedRequests = requestRepo.countConfirmedRequestsByEventId(i.getId());
+                    int views = 0;
+                    if (i.getEventState() == PUBLISHED) {
+                        Collection<ViewStatsDto> viewStatsDto = statsIntegration.statsRequest((List.of(i)));
+                        if (!viewStatsDto.isEmpty()) {
+                            long eventId = getEventId(new ArrayList<>(viewStatsDto).get(0));
+                            if (i.getId() != eventId) {
+                                throw new StatsRequestException(
+                                        String.format("Ошибка запроса статистики: запрошенный id %d не соответствует возвращенному %d",
+                                                i.getId(), eventId)
+                                );
+                            }
+                        }
+                        views = viewStatsDto.isEmpty() ? 0 : (int) new ArrayList<>(viewStatsDto).get(0).getHits();
+                    }
                     User user = userRepo.find(i.getInitiator());
                     Category category = categoryRepo.find(i.getCategoryId());
                     Location location = locationRepo.find(i.getLocationId());
-                    return EventMapper.toEventDto(i, category, user, location, 1, 1);
+                    return EventMapper.toEventDto(i, category, user, location, confirmedRequests, views);
                 })
                 .collect(Collectors.toList());
     }
