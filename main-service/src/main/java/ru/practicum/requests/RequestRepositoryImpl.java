@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.practicum.RepositoryMain;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 
 import java.sql.ResultSet;
@@ -74,7 +75,8 @@ public class RequestRepositoryImpl implements RepositoryMain<Request, Request> {
 
     @Override
     public Request update(Request obj, Long id) {
-        return null;
+        throw new ConflictException(String.format("Данная операция не поддерживается. Допустимо создать новый запрос, " +
+                "закрыть старый"));
     }
 
     @Override
@@ -89,7 +91,11 @@ public class RequestRepositoryImpl implements RepositoryMain<Request, Request> {
 
     @Override
     public Collection<Request> findAll(Integer from, Integer size) {
-        return null;
+        String sql = "select * from requests order by id limit :size offset :from";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("from", from);
+        parameters.addValue("size", size);
+        return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToRequest(rs));
     }
 
     public Collection<Request> findAllByUser(Long userId) {
@@ -100,6 +106,10 @@ public class RequestRepositoryImpl implements RepositoryMain<Request, Request> {
 
     @Override
     public void delete(Long id) {
+        String sql = "delete from requests where id = ?";
+        if (jdbcTemplate.update(sql, id) < 0) {
+            throw new NotFoundException(String.format("Запрос с id %d не найден", id));
+        }
 
     }
 

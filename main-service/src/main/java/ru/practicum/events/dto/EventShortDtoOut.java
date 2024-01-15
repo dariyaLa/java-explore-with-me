@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class EventShortDtoOut {
-    long id;
+
+    private long id;
     private String annotation;
     private CategoryDto category;
     private int confirmedRequests;

@@ -14,10 +14,10 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CompilationDto {
 
-    boolean pinned;
+    private boolean pinned;
     @NotBlank(message = "Название подборки не может быть пустым")
     @Size(min = 1, max = 50, message = "Название подборки может быть от 1 до 50 символов")
-    String title;
+    private String title;
     private final Collection<Long> events = new ArrayList<>();
 
 }

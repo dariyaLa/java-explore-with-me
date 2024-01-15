@@ -36,11 +36,6 @@ public class Constant {
 
     public static final String IP = "ip";
 
-    //константы для интеграции с сервисом статистики
-
-    public static final String APP_MAIN = "ewm-main-service";
-    public static final String URI_EVENTS = "/events";
-
     //константы для exception
     public static final String CATEGORY_DUPLICATE_EXCEPTION = "Категория с названием %s уже существует";
 

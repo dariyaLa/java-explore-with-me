@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 public class RequestDtoOut {
 
-    long id;
+    private long id;
     private LocalDateTime created;
     private long event;
     private long requester;

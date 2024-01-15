@@ -1,6 +1,7 @@
 package ru.practicum;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.events.Event;
 
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.practicum.constants.Constant.URI_EVENTS;
 import static ru.practicum.constants.Constant.getZoneOffset;
 import static ru.practicum.events.enums.EventState.PUBLISHED;
 
@@ -21,6 +21,9 @@ import static ru.practicum.events.enums.EventState.PUBLISHED;
 public class StatsIntegration {
 
     private final StatsClientImpl client;
+
+    @Value("${main-server.path_events}")
+    private String URI_EVENTS;
 
     public void addHitStats(String uri, String ip, String app) {
         HitDto hitDto = HitDto.builder()
@@ -45,7 +48,7 @@ public class StatsIntegration {
         List<Event> eventsPublished = events.stream()
                 .filter(event -> event.getEventState() == PUBLISHED)
                 .collect(Collectors.toList());
-        List<String> uris = makeUris(eventsPublished);
+        List<String> uris = setUris(eventsPublished);
         LocalDateTime startStat = getStartTime(eventsPublished);
         boolean unique = true;
         List<String> newUris = uris.stream()
@@ -54,7 +57,7 @@ public class StatsIntegration {
         return client.getStatistics(startStat.minusHours(1), LocalDateTime.now(), newUris, unique);
     }
 
-    private List<String> makeUris(List<Event> events) {
+    private List<String> setUris(List<Event> events) {
         List<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
         return eventIds.stream().map(id -> "/" + URI_EVENTS + "/" + id).collect(Collectors.toList());
     }

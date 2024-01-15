@@ -29,18 +29,20 @@ public class UserService implements ServiceMain<UserDto, UserDtoOut> {
     }
 
     @Override
-    public UserDtoOut update(UserDto obj, Long id) {
-        return null;
+    public UserDtoOut update(UserDto userDto, Long id) {
+        return UserMapper.toUserDto(repository.update(UserMapper.toUser(userDto), id));
     }
 
     @Override
     public UserDtoOut find(Long id) {
-        return null;
+        return UserMapper.toUserDto(repository.find(id));
     }
 
     @Override
     public Collection<UserDtoOut> findAll(Integer from, Integer size) {
-        return null;
+        return repository.findAll(from, size).stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -32,11 +32,8 @@ public class EventDto {
     private LocalDateTime eventDate;
     @NotNull
     private LocationDto location;
-    //default: false
     private boolean paid;
-    //default: 0
     private int participantLimit;
-    //default true
     private Boolean requestModeration;
     @NotBlank(message = "Отсутствует текст в заголовке")
     @Size(min = 3, max = 120, message = "Заголовок должен быть от 3 до 120 символов")

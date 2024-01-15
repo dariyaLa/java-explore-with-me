@@ -117,11 +117,19 @@ public class EventRepoImpl implements RepositoryMain<Event, Event> {
 
     @Override
     public Collection<Event> findAll(Integer from, Integer size) {
-        return null;
+        String sql = "select * from events order by id limit :size offset :from";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("from", from);
+        parameters.addValue("size", size);
+        return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToEvent(rs));
     }
 
     @Override
     public void delete(Long id) {
+        String sql = "delete from events where id = ?";
+        if (jdbcTemplate.update(sql, id) < 0) {
+            throw new NotFoundException(String.format("Событие с id %d не найдена", id));
+        }
 
     }
 

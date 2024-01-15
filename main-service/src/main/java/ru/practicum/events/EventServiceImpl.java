@@ -2,6 +2,7 @@ package ru.practicum.events;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.ServiceEvents;
 import ru.practicum.StatsIntegration;
@@ -48,6 +49,12 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     private final CategoryRepoImpl categoryRepo;
     private final RequestRepositoryImpl requestRepo;
     private final StatsIntegration statsIntegration;
+
+    @Value("${main-server.path_events}")
+    private String URI_EVENTS;
+
+    @Value("${main-server.app_name}")
+    private String APP_MAIN;
 
     @Override
     public EventDtoOut add(EventDto eventDto, Long userId) {

@@ -3,7 +3,7 @@ package ru.practicum.compilations;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.ServiceMain;
+import ru.practicum.ServiceCompilations;
 import ru.practicum.StatsIntegration;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.categories.Category;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CompilationServiceImpl implements ServiceMain<CompilationDto, CompilationDtoOut> {
+public class CompilationServiceImpl implements ServiceCompilations<CompilationDtoOut, CompilationDto, CompilationUpdateDto> {
 
     private final CompilationRepoImpl repository;
     private final CategoryRepoImpl categoryRepo;
@@ -49,12 +49,8 @@ public class CompilationServiceImpl implements ServiceMain<CompilationDto, Compi
         return compilationDtoFullOut(compilation);
     }
 
+
     @Override
-    public CompilationDtoOut update(CompilationDto obj, Long id) {
-        return null;
-    }
-
-
     public CompilationDtoOut update(CompilationUpdateDto compilationUpdateDto, Long id) {
         Compilation compilation = repository.find(id);
         updateNotNullFields(compilation, compilationUpdateDto);
@@ -80,11 +76,7 @@ public class CompilationServiceImpl implements ServiceMain<CompilationDto, Compi
     }
 
     @Override
-    public Collection<CompilationDtoOut> findAll(Integer from, Integer size) {
-        return null;
-    }
-
-    public Collection<CompilationDtoOut> getAll(Boolean pinned, int from, int size) {
+    public Collection<CompilationDtoOut> findAll(Boolean pinned, int from, int size) {
         Collection<Compilation> compilations;
         if (pinned != null) {
             compilations = repository.findAllWithFilter(pinned, from, size);

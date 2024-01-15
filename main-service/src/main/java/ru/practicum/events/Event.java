@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Event {
 
-    long id;
+    private long id;
     private String annotation;
     private long categoryId;
     private String description;

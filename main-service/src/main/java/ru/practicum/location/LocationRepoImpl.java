@@ -34,8 +34,19 @@ public class LocationRepoImpl implements RepositoryMain<Location, Location> {
     }
 
     @Override
-    public Location update(Location obj, Long id) {
-        return null;
+    public Location update(Location location, Long id) {
+        String sql = "update events set " +
+                "lat = :lat, " +
+                "lon = :lon where id= :id ";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        parameters.addValue("lat", location.getLat());
+        parameters.addValue("lon", location.getLon());
+
+        if (namedJdbcTemplate.update(sql, parameters) > 0) {
+            return location;
+        }
+        throw new NotFoundException(String.format("Локация с id %d не найдено", location.getId()));
     }
 
     @Override
@@ -51,20 +62,21 @@ public class LocationRepoImpl implements RepositoryMain<Location, Location> {
 
     @Override
     public Collection<Location> findAll(Integer from, Integer size) {
-        return null;
+        String sql = "select * from locations order by id limit :size offset :from";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("from", from);
+        parameters.addValue("size", size);
+        return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToLocation(rs));
     }
 
     @Override
     public void delete(Long id) {
+        String sql = "delete from locations where id = ?";
+        if (jdbcTemplate.update(sql, id) < 0) {
+            log.warn("Локация с id {} не найдена", id);
+            throw new NotFoundException(String.format("Локация с id %d не найдена", id));
+        }
 
-    }
-
-    public Collection<Location> findNearestByLatAndLon(Location location) {
-        String sql = "select * from locations where distance(:lat, :lon, lat, lon) <= radius " +
-                "order by radius";
-        MapSqlParameterSource parameters = new MapSqlParameterSource("lat", location.getLat());
-        parameters.addValue("lon", location.getLon());
-        return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToLocation(rs));
     }
 
     public Collection<Location> findByIds(Collection<Long> ids) {

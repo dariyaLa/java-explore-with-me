@@ -15,7 +15,6 @@ public class Compilation {
     private long id;
     private String title;
     private boolean pinned;
-
     private Collection<Long> events;
 
     public void setEvents(Collection<Long> newEvents) {

@@ -24,7 +24,7 @@ public class CompilationPublicController {
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @Positive(message = "error")
                                                 @RequestParam(defaultValue = "10") Integer size) {
-        return service.getAll(pinned, from, size);
+        return service.findAll(pinned, from, size);
     }
 
     @GetMapping("/{compId}")

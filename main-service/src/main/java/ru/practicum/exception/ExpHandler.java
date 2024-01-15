@@ -82,7 +82,7 @@ public class ExpHandler {
 
     @ExceptionHandler(StateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError exceptionHandleStateExeption(final StateException e) {
+    public ApiError exceptionHandleStateException(final StateException e) {
         log.error(e.getMessage(), e);
         return ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST)

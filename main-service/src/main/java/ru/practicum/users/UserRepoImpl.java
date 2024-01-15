@@ -34,8 +34,20 @@ public class UserRepoImpl implements RepositoryMain<User, UserDtoOut> {
     }
 
     @Override
-    public User update(User obj, Long id) {
-        return null;
+    public User update(User user, Long id) {
+        find(id);
+        String sql = "update events set " +
+                "name = :name, " +
+                "email = :email where id= :id ";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", id);
+        parameters.addValue("name", user.getName());
+        parameters.addValue("email", user.getEmail());
+
+        if (namedJdbcTemplate.update(sql, parameters) > 0) {
+            return user;
+        }
+        throw new NotFoundException(String.format("Пользователь с id %d не найден", id));
     }
 
     @Override
@@ -51,7 +63,11 @@ public class UserRepoImpl implements RepositoryMain<User, UserDtoOut> {
 
     @Override
     public Collection<User> findAll(Integer from, Integer size) {
-        return null;
+        String sql = "select * from users order by id limit :size offset :from";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("from", from);
+        parameters.addValue("size", size);
+        return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToUser(rs));
     }
 
     @Override
