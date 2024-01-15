@@ -23,7 +23,7 @@ public class StatsIntegration {
     private final StatsClientImpl client;
 
     @Value("${main-server.path_events}")
-    private String URI_EVENTS;
+    private String uriEvents;
 
     public void addHitStats(String uri, String ip, String app) {
         HitDto hitDto = HitDto.builder()
@@ -59,7 +59,7 @@ public class StatsIntegration {
 
     private List<String> setUris(List<Event> events) {
         List<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
-        return eventIds.stream().map(id -> "/" + URI_EVENTS + "/" + id).collect(Collectors.toList());
+        return eventIds.stream().map(id -> "/" + uriEvents + "/" + id).collect(Collectors.toList());
     }
 
     private LocalDateTime getStartTime(List<Event> events) {

@@ -51,10 +51,10 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     private final StatsIntegration statsIntegration;
 
     @Value("${main-server.path_events}")
-    private String URI_EVENTS;
+    private String uriEvents;
 
     @Value("${main-server.app_name}")
-    private String APP_MAIN;
+    private String appMain;
 
     @Override
     public EventDtoOut add(EventDto eventDto, Long userId) {
@@ -86,7 +86,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         mapFilter.put(IS_PUBLISHED, true);
 
         Collection<Event> events = repository.findAllWithFilter(mapFilter);
-        statsIntegration.addHitStats(URI_EVENTS, (String) mapFilter.get(IP), APP_MAIN);
+        statsIntegration.addHitStats(uriEvents, (String) mapFilter.get(IP), appMain);
         if ((Boolean) mapFilter.get(ONLY_AVAILABLE)) {
             Collection<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
             Map<Long, Integer> confirmedRequestsQty = requestRepo.countConfirmedRequestsByEventIds(eventIds);
@@ -98,7 +98,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
             return eventsFullSortedByViewsDtoList(events, (Integer) mapFilter.get(FROM), (Integer) mapFilter.get(SIZE));
 
         }
-        events.forEach(event -> statsIntegration.addHitStats(URI_EVENTS + "/" + event.getId(), (String) mapFilter.get(IP), APP_MAIN));
+        events.forEach(event -> statsIntegration.addHitStats(uriEvents + "/" + event.getId(), (String) mapFilter.get(IP), appMain));
         return eventsFullDtoOutList(events);
     }
 
@@ -115,7 +115,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         if (event.getEventState() != PUBLISHED) {
             throw new NotFoundException(String.format("Событие с id %d еще не опубликовано", id));
         }
-        statsIntegration.addHitStats(URI_EVENTS + "/" + id, ip, APP_MAIN);
+        statsIntegration.addHitStats(uriEvents + "/" + id, ip, appMain);
         return eventFullDto(event);
     }
 
