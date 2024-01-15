@@ -20,7 +20,7 @@ create TABLE IF NOT EXISTS locations
 (
     id     BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     lat    FLOAT NOT NULL,
-    lon    FLOAT NOT NULL
+    lon    FLOAT NOT NULL,
 
     CONSTRAINT UQ_LOCATION_LAT_LON UNIQUE (lat, lon)
 );

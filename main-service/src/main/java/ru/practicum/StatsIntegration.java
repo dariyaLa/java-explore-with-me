@@ -1,6 +1,5 @@
 package ru.practicum;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.practicum.events.Event;
@@ -17,13 +16,17 @@ import static ru.practicum.constants.Constant.getZoneOffset;
 import static ru.practicum.events.enums.EventState.PUBLISHED;
 
 @Service
-@RequiredArgsConstructor
 public class StatsIntegration {
 
     private final StatsClientImpl client;
 
-    @Value("${main-server.path_events}")
-    private String uriEvents;
+    private final String uriEvents;
+
+    public StatsIntegration(StatsClientImpl client,
+                            @Value("${main-server.path_events}") String uriEvents) {
+        this.client = client;
+        this.uriEvents = uriEvents;
+    }
 
     public void addHitStats(String uri, String ip, String app) {
         HitDto hitDto = HitDto.builder()

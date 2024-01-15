@@ -1,6 +1,5 @@
 package ru.practicum.events;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,6 @@ import static ru.practicum.events.enums.EventState.PUBLISHED;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
 
     private final EventRepoImpl repository;
@@ -50,11 +48,27 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     private final RequestRepositoryImpl requestRepo;
     private final StatsIntegration statsIntegration;
 
-    @Value("${main-server.path_events}")
-    private String uriEvents;
+    private final String pathEvents;
 
-    @Value("${main-server.app_name}")
-    private String appMain;
+    private final String appMain;
+
+    public EventServiceImpl(EventRepoImpl repository,
+                            UserRepoImpl userRepo,
+                            LocationRepoImpl locationRepo,
+                            CategoryRepoImpl categoryRepo,
+                            RequestRepositoryImpl requestRepo,
+                            StatsIntegration statsIntegration,
+                            @Value("${main-server.path_events}") String pathEvents,
+                            @Value("${main-server.app_name}") String appMain) {
+        this.repository = repository;
+        this.userRepo = userRepo;
+        this.locationRepo = locationRepo;
+        this.categoryRepo = categoryRepo;
+        this.requestRepo = requestRepo;
+        this.statsIntegration = statsIntegration;
+        this.pathEvents = pathEvents;
+        this.appMain = appMain;
+    }
 
     @Override
     public EventDtoOut add(EventDto eventDto, Long userId) {
@@ -86,7 +100,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         mapFilter.put(IS_PUBLISHED, true);
 
         Collection<Event> events = repository.findAllWithFilter(mapFilter);
-        statsIntegration.addHitStats(uriEvents, (String) mapFilter.get(IP), appMain);
+        statsIntegration.addHitStats(pathEvents, (String) mapFilter.get(IP), appMain);
         if ((Boolean) mapFilter.get(ONLY_AVAILABLE)) {
             Collection<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
             Map<Long, Integer> confirmedRequestsQty = requestRepo.countConfirmedRequestsByEventIds(eventIds);
@@ -98,7 +112,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
             return eventsFullSortedByViewsDtoList(events, (Integer) mapFilter.get(FROM), (Integer) mapFilter.get(SIZE));
 
         }
-        events.forEach(event -> statsIntegration.addHitStats(uriEvents + "/" + event.getId(), (String) mapFilter.get(IP), appMain));
+        events.forEach(event -> statsIntegration.addHitStats(pathEvents + "/" + event.getId(), (String) mapFilter.get(IP), appMain));
         return eventsFullDtoOutList(events);
     }
 
@@ -115,7 +129,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         if (event.getEventState() != PUBLISHED) {
             throw new NotFoundException(String.format("Событие с id %d еще не опубликовано", id));
         }
-        statsIntegration.addHitStats(uriEvents + "/" + id, ip, appMain);
+        statsIntegration.addHitStats(pathEvents + "/" + id, ip, appMain);
         return eventFullDto(event);
     }
 
