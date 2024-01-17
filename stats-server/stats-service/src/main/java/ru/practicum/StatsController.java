@@ -25,7 +25,8 @@ public class StatsController {
     public List<ViewStatsDto> getStat(@RequestParam String start,
                                       @RequestParam String end,
                                       @RequestParam(required = false, defaultValue = "") List<String> uris,
-                                      @RequestParam(required = false, defaultValue = "false") boolean unique) {
+                                      @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+        //boolean uniqueValue = Boolean.parseBoolean(unique);
         return service.getStats(start, end, uris, unique);
     }
 }

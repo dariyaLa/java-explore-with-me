@@ -1,8 +1,7 @@
 version: '3.8'
 services:
-  stats:
+  stats-server:
     build: stats-server/stats-service
-    image: stats-service-image
     container_name: stats-service
     ports:
       - "9090:9090"
@@ -25,7 +24,23 @@ services:
       - POSTGRES_PASSWORD=stats
   main-service:
     build: main-service
-    image: main-service-image
     container_name: main-service
     ports:
       - "8080:8080"
+    depends_on:
+      - main-db
+    environment:
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main
+        - POSTGRES_USER=main
+        - POSTGRES_PASSWORD=main
+  main-db:
+    image: postgres:12-alpine
+    container_name: main-db
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "6540:5432"
+    environment:
+      - POSTGRES_DB=main
+      - POSTGRES_USER=main
+      - POSTGRES_PASSWORD=main

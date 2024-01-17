@@ -1,0 +1,2 @@
+DELETE FROM apps;
+DELETE FROM hits;
