@@ -91,4 +91,16 @@ public class ExpHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @ExceptionHandler(PrivateProfile.class)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiError exceptionHandlePrivateProfile(final PrivateProfile e) {
+        log.error(e.getMessage(), e);
+        return ApiError.builder()
+                .status(HttpStatus.ACCEPTED)
+                .reason("Successful request. id=" + e.getId())
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
 }

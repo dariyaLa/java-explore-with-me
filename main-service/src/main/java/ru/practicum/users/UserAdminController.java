@@ -5,9 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ApiResponse;
 
 import javax.validation.Valid;
 import java.util.Collection;
+
+import static ru.practicum.constants.Constant.SUCCESSFUL;
 
 @Slf4j
 @RestController
@@ -35,5 +38,13 @@ public class UserAdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long userId) {
         service.delete(userId);
+    }
+
+    @PostMapping("/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse closedProfile(@PathVariable long userId,
+                                     @RequestParam boolean isPublicProfile) {
+        service.changeProfile(userId, isPublicProfile);
+        return ApiResponse.builder().stateAction(SUCCESSFUL).build();
     }
 }

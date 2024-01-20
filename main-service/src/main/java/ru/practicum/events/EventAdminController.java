@@ -53,9 +53,6 @@ public class EventAdminController {
         }
         Instant start = startLocal == null ? null : startLocal.toInstant(Constant.getZoneOffset());
         Instant end = endLocal == null ? null : endLocal.toInstant(Constant.getZoneOffset());
-//        if (start != null && end != null) {
-//            validateStartEndDates(start, end);
-//        }
         filter = new Filter();
         filter.setMapFilter(users, states, categories, start, end, from, size);
         return service.findAllAdminWithFilter(filter.getMapFilter());

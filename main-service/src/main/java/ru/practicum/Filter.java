@@ -59,8 +59,6 @@ public class Filter {
         mapFilter.put(FROM, from);
         mapFilter.put(SIZE, size);
         mapFilter.put(IP, ip);
-
-
     }
 
     public void setMapFilter(Long userId,

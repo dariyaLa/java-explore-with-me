@@ -174,9 +174,9 @@ public class EventRepoImpl implements RepositoryMain<Event, Event> {
             parameters.addValue("end", Timestamp.from((Instant) filter.get(END)));
         }
 
-        if (filter.get(USERS) != null) {
+        if (filter.get(INITIATORS) != null) {
             conditions.add("initiator in (:initiators)");
-            parameters.addValue("initiators", filter.get(USERS));
+            parameters.addValue("initiators", filter.get(INITIATORS));
         }
 
         if (filter.get(STATES) != null) {

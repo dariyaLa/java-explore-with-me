@@ -25,6 +25,8 @@ import ru.practicum.location.LocationDto;
 import ru.practicum.location.LocationMapper;
 import ru.practicum.location.LocationRepoImpl;
 import ru.practicum.requests.RequestRepositoryImpl;
+import ru.practicum.subscribers.Subscription;
+import ru.practicum.subscribers.SubscriptionRepoImpl;
 import ru.practicum.users.User;
 import ru.practicum.users.UserRepoImpl;
 
@@ -48,6 +50,8 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
     private final RequestRepositoryImpl requestRepo;
     private final StatsIntegration statsIntegration;
 
+    private final SubscriptionRepoImpl subscriptionRepo;
+
     private final String pathEvents;
 
     private final String appMain;
@@ -58,6 +62,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
                             CategoryRepoImpl categoryRepo,
                             RequestRepositoryImpl requestRepo,
                             StatsIntegration statsIntegration,
+                            SubscriptionRepoImpl subscriptionRepo,
                             @Value("${main-server.path_events}") String pathEvents,
                             @Value("${main-server.app_name}") String appMain) {
         this.repository = repository;
@@ -66,6 +71,7 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         this.categoryRepo = categoryRepo;
         this.requestRepo = requestRepo;
         this.statsIntegration = statsIntegration;
+        this.subscriptionRepo = subscriptionRepo;
         this.pathEvents = pathEvents;
         this.appMain = appMain;
     }
@@ -114,6 +120,13 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         }
         events.forEach(event -> statsIntegration.addHitStats(pathEvents + "/" + event.getId(), (String) mapFilter.get(IP), appMain));
         return eventsFullDtoOutList(events);
+    }
+
+    //кладем в мапу для фильтра только тех инициаторов, на которых подписаны
+    public Collection<EventDtoOut> findAllWithFilterBySubscriptions(Map<String, Object> mapFilter, long userId) {
+        Collection<Long> usersBySubscription = findIdUsersBySubscription(userId, 0, 100);
+        mapFilter.put(INITIATORS, usersBySubscription);
+        return findAllWithFilter(mapFilter);
     }
 
 
@@ -396,5 +409,13 @@ public class EventServiceImpl implements ServiceEvents<EventDto, EventDtoOut> {
         if (field.length() < min || field.length() > max) {
             throw new ValidationException(String.format("Длина поля %s должна быть от %d до %d", fieldName, min, max));
         }
+    }
+
+
+    //id-s пользователей, на которых подписаны
+    private Collection<Long> findIdUsersBySubscription(long userId, Integer from, Integer size) {
+        return subscriptionRepo.findAllBySubscriber(userId, from, size).stream()
+                .map(Subscription::getUserSubscription)
+                .collect(Collectors.toList());
     }
 }

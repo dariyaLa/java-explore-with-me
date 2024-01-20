@@ -8,12 +8,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.practicum.RepositoryMain;
 import ru.practicum.exception.NotFoundException;
 
 import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Repository
@@ -24,13 +27,18 @@ public class UserRepoImpl implements RepositoryMain<User, UserDtoOut> {
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Override
-    public User add(User obj) {
+    public User add(User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
-                .usingGeneratedKeyColumns("id");
-        long id = simpleJdbcInsert.executeAndReturnKey(obj.toMap()).longValue();
-        obj.setId(id);
-        return obj;
+                .usingGeneratedKeyColumns("id", "public_profile");
+        //long id = simpleJdbcInsert.executeAndReturnKey(obj.toMap()).longValue();
+        KeyHolder generatedKeys = simpleJdbcInsert.executeAndReturnKeyHolder(user.toMap());
+        Map<String, Object> keys = generatedKeys.getKeys();
+        long id = (long) Objects.requireNonNull(keys).get("id");
+        Boolean isPublicProfile = (Boolean) keys.get("public_profile");
+        user.setId(id);
+        user.setPublicProfile(isPublicProfile);
+        return user;
     }
 
     @Override
@@ -100,15 +108,40 @@ public class UserRepoImpl implements RepositoryMain<User, UserDtoOut> {
         return namedJdbcTemplate.query(sql, parameters, (rs, rowNum) -> mapRowToUser(rs));
     }
 
+    public User findByName(String userName) {
+        String sql = "select * from users where name = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToUser(rs), userName);
+        } catch (DataRetrievalFailureException e) {
+            throw new NotFoundException(String.format("Пользователь с именем %d не найден", userName));
+        }
+    }
+
+    public Boolean changeProfile(long userId, boolean isCheckProfile) {
+        find(userId);
+        String sql = "update users set " +
+                "public_profile = :isPublicProfile " +
+                "where id= :id ";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("id", userId);
+        parameters.addValue("isPublicProfile", isCheckProfile);
+        if (namedJdbcTemplate.update(sql, parameters) > 0) {
+            return true;
+        }
+        throw new RuntimeException("Непредвиденная ошибка при смене публичности профиля");
+    }
+
     @SneakyThrows
     private User mapRowToUser(ResultSet rs) {
         long id = rs.getLong("id");
         String name = rs.getString("name");
         String email = rs.getString("email");
+        Boolean isPublicProfile = rs.getBoolean("public_profile");
         return User.builder()
                 .id(id)
                 .name(name)
                 .email(email)
+                .publicProfile(isPublicProfile)
                 .build();
     }
 }
