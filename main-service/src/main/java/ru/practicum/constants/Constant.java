@@ -10,7 +10,7 @@ public class Constant {
     }
 
     //для успешного ответа
-    public static String SUCCESSFUL = "SUCCESSFUL";
+    public static final String SUCCESSFUL = "SUCCESSFUL";
 
     //ключи для фильтра
     public static final String USERS = "users";
