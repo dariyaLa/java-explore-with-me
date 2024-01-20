@@ -25,7 +25,7 @@ public class Filter {
                              Instant endLocal,
                              Integer from,
                              Integer size) {
-        mapFilter.put(USERS, users);
+        mapFilter.put(INITIATORS, users);
         mapFilter.put(STATES, states);
         mapFilter.put(CATEGORIES, categories);
         mapFilter.put(START, startLocal);
