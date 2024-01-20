@@ -3,6 +3,7 @@ create TABLE IF NOT EXISTS users
     id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name  VARCHAR(255) NOT NULL,
     email VARCHAR(512) NOT NULL,
+    public_profile BOOLEAN DEFAULT true,
 
     CONSTRAINT UQ_USER_NAME UNIQUE (name),
     CONSTRAINT UQ_USER_EMAIL UNIQUE (email)
@@ -81,3 +82,16 @@ create TABLE IF NOT EXISTS compilations_events
 
     PRIMARY KEY (compilation_id, event_id)
 );
+
+create TABLE IF NOT EXISTS subscriptions
+(
+    id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    userId_subscription   BIGINT NOT NULL,
+    subscriber_id          BIGINT NOT NULL,
+    state    VARCHAR(10) NOT NULL,
+    created_on            TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    closed_on             TIMESTAMP WITHOUT TIME ZONE DEFAULT NULL,
+
+    CONSTRAINT fk_subscriptions_to_users FOREIGN KEY (userId_subscription) REFERENCES users (id) ON delete CASCADE
+
+)

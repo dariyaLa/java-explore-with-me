@@ -56,4 +56,8 @@ public class UserService implements ServiceMain<UserDto, UserDtoOut> {
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
+
+    public void changeProfile(long userId, boolean isPublicProfile) {
+        repository.changeProfile(userId, isPublicProfile);
+    }
 }

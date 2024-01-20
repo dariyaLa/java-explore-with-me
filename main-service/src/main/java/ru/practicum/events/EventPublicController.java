@@ -66,6 +66,40 @@ public class EventPublicController {
         return service.find(id, ip);
     }
 
+    //получение только тех событий, на ицицаторов которых подписаны
+    @GetMapping("/subscriptions/{userId}")
+    public Collection<EventDtoOut> getAllOfSubscriptions(@PathVariable long userId,
+                                                         @RequestParam(required = false) String text,
+                                                         @RequestParam(required = false) Collection<Long> categories,
+                                                         @RequestParam(required = false) Boolean paid,
+                                                         @RequestParam(required = false, name = "rangeStart")
+                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                         LocalDateTime startLocal,
+                                                         @RequestParam(required = false, name = "rangeEnd")
+                                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                         LocalDateTime endLocal,
+                                                         @RequestParam(defaultValue = "false") boolean onlyAvailable,
+                                                         @RequestParam(required = false, name = "sort") String sortParam,
+                                                         @PositiveOrZero(message = "error")
+                                                         @RequestParam(defaultValue = "0") Integer from,
+                                                         @Positive(message = "error")
+                                                         @RequestParam(defaultValue = "10") Integer size,
+                                                         HttpServletRequest request) {
+        EventSort sort = null;
+        if (sortParam != null) {
+            sort = EventSort.getSort(sortParam);
+        }
+        Instant start = startLocal == null ? Instant.now() : startLocal.toInstant(getZoneOffset());
+        Instant end = endLocal == null ? null : endLocal.toInstant(getZoneOffset());
+
+        if (end != null) {
+            validateDate(start, end);
+        }
+        String ip = request.getRemoteAddr();
+        filter.setMapFilter(text, categories, paid, start, end, onlyAvailable, sort, from, size, ip);
+        return service.findAllWithFilterBySubscriptions(filter.getMapFilter(), userId);
+    }
+
     private static void validateDate(Instant start, Instant end) {
         if (!end.isAfter(start)) {
             throw new ValidationException("Дата окончания должна быть позже даты начала");

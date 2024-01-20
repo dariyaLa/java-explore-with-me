@@ -25,7 +25,7 @@ public class Filter {
                              Instant endLocal,
                              Integer from,
                              Integer size) {
-        mapFilter.put(USERS, users);
+        mapFilter.put(INITIATORS, users);
         mapFilter.put(STATES, states);
         mapFilter.put(CATEGORIES, categories);
         mapFilter.put(START, startLocal);
@@ -59,8 +59,6 @@ public class Filter {
         mapFilter.put(FROM, from);
         mapFilter.put(SIZE, size);
         mapFilter.put(IP, ip);
-
-
     }
 
     public void setMapFilter(Long userId,

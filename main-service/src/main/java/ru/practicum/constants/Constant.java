@@ -9,6 +9,9 @@ public class Constant {
         return OffsetDateTime.now().getOffset();
     }
 
+    //для успешного ответа
+    public static final String SUCCESSFUL = "SUCCESSFUL";
+
     //ключи для фильтра
     public static final String USERS = "users";
     public static final String STATES = "states";
@@ -29,6 +32,8 @@ public class Constant {
     public static final String PAID = "paid";
 
     public static final String SORT = "sort";
+
+    public static final String INITIATORS = "initiator";
 
     public static final String USER = "user";
 
